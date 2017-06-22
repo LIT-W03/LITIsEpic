@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using LITIsEpic.Data;
+using LITIsEpic.Web.Models;
 
 namespace LITIsEpic.Web.Controllers
 {
@@ -10,21 +12,15 @@ namespace LITIsEpic.Web.Controllers
     {
         public ActionResult Index()
         {
-            return View();
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            var repo = new VisitsRepository(Properties.Settings.Default.ConStr);
+            repo.AddVisit(Request.UserHostAddress);
+            var vm = new HomePageViewModel
+            {
+                FiveMostFrequentIPs = repo.GetFiveMostFrequentIPs(),
+                TodayCount = repo.GetVisitCountForToday(),
+                MostPopularIP = repo.GetMostPopularIpAddress()
+            };
+            return View(vm);
         }
     }
 }
